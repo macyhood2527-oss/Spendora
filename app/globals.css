@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf7;
+  --foreground: #2b2b2b;
+  --color-background: #fafaf7;
+  --color-primary: #3f8f68;
+  --color-secondary: #7fbf9a;
+  --color-wood: #8b5e3c;
+  --color-sand: #c8a27c;
+  --color-text: #2b2b2b;
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-background: var(--color-background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: "Avenir Next", "Nunito Sans", "Segoe UI", sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Avenir Next", "Nunito Sans", "Segoe UI", sans-serif;
+  background-image:
+    radial-gradient(circle at top left, rgba(127, 191, 154, 0.24), transparent 28%),
+    radial-gradient(circle at top right, rgba(200, 162, 124, 0.18), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(250, 250, 247, 0.96));
+  min-height: 100vh;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+::selection {
+  background: rgba(127, 191, 154, 0.35);
+}
+
+.cozy-surface {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: portrait;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: white !important;
+    color: #1f1f1f;
+    font-family: Georgia, "Times New Roman", serif;
+    width: auto;
+    height: auto;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .print-root,
+  .print-root * {
+    visibility: visible !important;
+  }
+
+  .print-root {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-hidden {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-report-sheet {
+    display: block !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-report-card {
+    break-inside: avoid;
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  .print-report-document {
+    display: block !important;
+    color: #1f1f1f !important;
+    width: 100%;
+    max-width: 100%;
+    font-size: 11pt;
+    line-height: 1.35;
+  }
+
+  .print-report-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 18px;
+  }
+
+  .print-report-rule {
+    border-top: 1px solid rgba(31, 31, 31, 0.18);
+  }
+
+  .print-report-list-item {
+    break-inside: avoid;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(31, 31, 31, 0.08);
+  }
 }
