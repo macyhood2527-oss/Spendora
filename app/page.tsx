@@ -182,29 +182,29 @@ export default function DashboardPage() {
       </FadeIn>
 
       <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
-        {celebrationStates.length > 0 ? (
-          <FadeIn delay={0.04}>
-            <section className="h-full rounded-[26px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(248,252,249,0.78))] p-4 shadow-[0_16px_38px_rgba(139,94,60,0.06)] backdrop-blur sm:rounded-[30px] sm:p-5">
-              <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[rgba(127,191,154,0.16)]">
-                  <Sparkles
-                    size={19}
-                    strokeWidth={1.5}
-                    className="text-[var(--color-primary)]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--color-primary)]">
-                    Small wins
-                  </p>
-                  <p className="text-sm leading-6 text-[color:rgba(43,43,43,0.6)]">
-                    Quiet progress worth noticing this month.
-                  </p>
-                </div>
+        <FadeIn delay={0.04}>
+          <section className="h-full rounded-[26px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(248,252,249,0.78))] p-4 shadow-[0_16px_38px_rgba(139,94,60,0.06)] backdrop-blur sm:rounded-[30px] sm:p-5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[rgba(127,191,154,0.16)]">
+                <Sparkles
+                  size={19}
+                  strokeWidth={1.5}
+                  className="text-[var(--color-primary)]"
+                />
               </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--color-primary)]">
+                  Small wins
+                </p>
+                <p className="text-sm leading-6 text-[color:rgba(43,43,43,0.6)]">
+                  Quiet progress worth noticing this month.
+                </p>
+              </div>
+            </div>
 
-              <div className="mt-4 space-y-3">
-                {celebrationStates.slice(0, 2).map((state, index) => (
+            <div className="mt-4 space-y-3">
+              {celebrationStates.length > 0 ? (
+                celebrationStates.slice(0, 2).map((state, index) => (
                   <FadeIn key={state.title} delay={0.04 * (index + 1)}>
                     <article className="rounded-[20px] bg-white/72 px-4 py-4">
                       <div className="flex items-start gap-2">
@@ -224,13 +224,30 @@ export default function DashboardPage() {
                       </div>
                     </article>
                   </FadeIn>
-                ))}
-              </div>
-            </section>
-          </FadeIn>
-        ) : (
-          <div />
-        )}
+                ))
+              ) : (
+                <article className="rounded-[20px] bg-white/72 px-4 py-4">
+                  <div className="flex items-start gap-2">
+                    <Sparkles
+                      size={16}
+                      strokeWidth={1.7}
+                      className="mt-0.5 shrink-0 text-[var(--color-primary)]"
+                    />
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--color-text)]">
+                        Wins will show up here
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-[color:rgba(43,43,43,0.6)]">
+                        Add a few expenses, set a budget, or track across a couple of days and
+                        Spendora will start highlighting your progress.
+                      </p>
+                    </div>
+                  </div>
+                </article>
+              )}
+            </div>
+          </section>
+        </FadeIn>
 
         <FadeIn delay={0.08}>
           <section className="h-full rounded-[26px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.86),rgba(250,250,247,0.72))] p-4 shadow-[0_16px_38px_rgba(139,94,60,0.06)] backdrop-blur sm:rounded-[30px] sm:p-5">
