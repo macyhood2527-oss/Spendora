@@ -11,6 +11,8 @@ import { useCategories } from "@/features/expenses/use-categories";
 import { useExpenses } from "@/features/expenses/use-expenses";
 import { addExpense } from "@/lib/db/spendora-db";
 
+const QUICK_AMOUNTS = [50, 100, 250, 500] as const;
+
 export default function AddExpensePage() {
   const router = useRouter();
   const { categories } = useCategories();
@@ -83,13 +85,26 @@ export default function AddExpensePage() {
     setCategory(presetCategory);
   };
 
+  const applyQuickAmount = (quickAmount: number) => {
+    setAmount((currentAmount) => {
+      const parsedCurrent = Number(currentAmount);
+
+      if (!Number.isFinite(parsedCurrent) || parsedCurrent <= 0) {
+        return String(quickAmount);
+      }
+
+      return String((parsedCurrent + quickAmount).toFixed(2).replace(/\.00$/, ""));
+    });
+    setError("");
+  };
+
   return (
     <div className="mx-auto max-w-3xl space-y-6 sm:space-y-8">
-      <FadeIn className="space-y-3">
+      <FadeIn className="space-y-2 sm:space-y-3">
         <p className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--color-primary)]">
           Add Expense
         </p>
-        <h1 className="font-display text-[3rem] leading-none text-[var(--color-text)] sm:text-[3.75rem] md:text-6xl">
+        <h1 className="font-display text-[2.2rem] leading-none text-[var(--color-text)] sm:text-[3.75rem] md:text-6xl">
           Capture a spend softly
         </h1>
         <p className="max-w-xl text-sm leading-6 text-[color:rgba(43,43,43,0.72)] sm:leading-7 md:text-base">
@@ -107,6 +122,7 @@ export default function AddExpensePage() {
               label="Amount"
               name="amount"
               type="number"
+              inputMode="decimal"
               placeholder="0.00"
               min="0"
               step="0.01"
@@ -148,6 +164,24 @@ export default function AddExpensePage() {
             </InputField>
           </div>
 
+          <div className="mt-4 rounded-[24px] bg-[rgba(250,250,247,0.82)] p-4 sm:hidden">
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[color:rgba(43,43,43,0.46)]">
+              Quick amount
+            </p>
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              {QUICK_AMOUNTS.map((quickAmount) => (
+                <button
+                  key={quickAmount}
+                  type="button"
+                  onClick={() => applyQuickAmount(quickAmount)}
+                  className="rounded-full bg-white px-3 py-2 text-sm font-medium text-[var(--color-text)] shadow-[0_8px_16px_rgba(139,94,60,0.05)]"
+                >
+                  +{quickAmount}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-5">
             <InputField
               label="Notes"
@@ -160,11 +194,20 @@ export default function AddExpensePage() {
             />
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-6 hidden flex-col gap-3 sm:flex sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-[color:rgba(43,43,43,0.62)]">
               {error || "Saved entries appear in your expense list immediately."}
             </p>
             <Button type="submit" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save expense"}
+            </Button>
+          </div>
+
+          <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+4.9rem)] mt-6 -mx-4 border-t border-[rgba(139,94,60,0.08)] bg-[rgba(255,255,255,0.96)] px-4 pb-1 pt-4 backdrop-blur sm:hidden">
+            <p className={`text-sm ${error ? "text-[#a84c4c]" : "text-[color:rgba(43,43,43,0.62)]"}`}>
+              {error || "Saved entries appear in your expense list immediately."}
+            </p>
+            <Button type="submit" disabled={isSaving} className="mt-3 w-full">
               {isSaving ? "Saving..." : "Save expense"}
             </Button>
           </div>

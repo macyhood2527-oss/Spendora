@@ -13,8 +13,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const hasMounted = useHasMounted();
-  const { applyUpdate, canInstall, isOffline, promptInstall, updateReady } = usePwa();
+  const { applyUpdate, canInstall, isOffline, isStandalone, promptInstall, updateReady } = usePwa();
   const activeMobilePathname = hasMounted ? pathname : "";
+  const activeMobileItem = mobilePrimaryNavItems.find((item) => item.href === activeMobilePathname);
+  const mobileHeaderLabel = activeMobileItem?.label ?? "Spendora";
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -31,7 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             sidebarCollapsed ? "lg:pl-[112px]" : "lg:pl-[310px]"
           }`}
         >
-          <div className="print-hidden mx-3 mt-3 space-y-3 sm:mx-4 sm:mt-4 lg:mx-6 lg:mt-5 lg:mr-8">
+          <div className={`print-hidden space-y-3 ${isStandalone ? "mx-3 mt-2 sm:mx-4 sm:mt-3" : "mx-3 mt-3 sm:mx-4 sm:mt-4"} lg:mx-6 lg:mt-5 lg:mr-8`}>
             {hasMounted && isOffline ? (
               <div className="rounded-[22px] border border-white/70 bg-[rgba(255,248,240,0.9)] px-4 py-3 text-sm text-[color:rgba(43,43,43,0.72)] shadow-[0_12px_30px_rgba(139,94,60,0.06)] backdrop-blur">
                 <div className="flex items-center gap-3">
@@ -83,35 +85,35 @@ export function AppShell({ children }: { children: ReactNode }) {
             ) : null}
           </div>
 
-          <header className="cozy-surface print-hidden mx-3 mb-3 mt-3 flex items-center justify-between rounded-[24px] border border-white/70 px-4 py-3 shadow-[0_18px_45px_rgba(139,94,60,0.08)] sm:mx-4 sm:mb-4 sm:mt-4 sm:rounded-[28px] sm:px-5 sm:py-4 lg:hidden">
+          <header className={`cozy-surface print-hidden flex items-center justify-between rounded-[22px] border border-white/70 px-3.5 py-2.5 shadow-[0_16px_32px_rgba(139,94,60,0.07)] sm:mx-4 sm:mb-4 sm:mt-4 sm:rounded-[28px] sm:px-5 sm:py-4 lg:hidden ${isStandalone ? "mx-3 mb-2 mt-2" : "mx-3 mb-2 mt-3"}`}>
             <Link href="/" className="inline-flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary)] text-white shadow-[0_12px_22px_rgba(63,143,104,0.22)]">
-                <Sprout size={18} strokeWidth={1.7} />
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-primary)] text-white shadow-[0_10px_18px_rgba(63,143,104,0.18)]">
+                <Sprout size={16} strokeWidth={1.7} />
               </span>
               <div>
-                <p className="font-display text-[1.75rem] leading-none text-[var(--color-text)] sm:text-3xl">
+                <p className="font-display text-[1.45rem] leading-none text-[var(--color-text)] sm:text-3xl">
                   Spendora
                 </p>
-                <p className="mt-1 text-xs text-[color:rgba(43,43,43,0.56)]">
-                  {activeMobilePathname === "/" ? "Dashboard" : "Expense tracker"}
+                <p className="mt-0.5 text-[10px] uppercase tracking-[0.16em] text-[color:rgba(43,43,43,0.5)]">
+                  {mobileHeaderLabel}
                 </p>
               </div>
             </Link>
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/75 text-[var(--color-primary)] shadow-[0_10px_20px_rgba(139,94,60,0.06)]"
+              className="flex h-9 w-9 items-center justify-center rounded-[18px] bg-white/75 text-[var(--color-primary)] shadow-[0_8px_16px_rgba(139,94,60,0.05)]"
               aria-label="Open sidebar"
             >
-              <Menu size={18} strokeWidth={1.5} />
+              <Menu size={17} strokeWidth={1.5} />
             </button>
           </header>
 
-          <main className="mx-3 mb-[calc(env(safe-area-inset-bottom)+5.7rem)] mt-4 sm:mx-4 sm:mb-[calc(env(safe-area-inset-bottom)+6rem)] sm:mt-5 lg:mx-6 lg:mb-8 lg:mr-8 lg:mt-8">
+          <main className={`mx-3 mb-[calc(env(safe-area-inset-bottom)+5.7rem)] ${isStandalone ? "mt-3" : "mt-4"} sm:mx-4 sm:mb-[calc(env(safe-area-inset-bottom)+6rem)] sm:mt-5 lg:mx-6 lg:mb-8 lg:mr-8 lg:mt-8`}>
             {children}
           </main>
 
-          <nav className="print-hidden fixed inset-x-0 bottom-0 z-30 bg-[linear-gradient(180deg,rgba(250,248,244,0),rgba(250,248,244,0.14)_40%,rgba(250,248,244,0.3)_70%,rgba(250,248,244,0.48)_100%)] px-2 pb-[calc(env(safe-area-inset-bottom)+0.3rem)] pt-1.5 lg:hidden">
+          <nav className={`print-hidden fixed inset-x-0 bottom-0 z-30 bg-[linear-gradient(180deg,rgba(250,248,244,0),rgba(250,248,244,0.14)_40%,rgba(250,248,244,0.3)_70%,rgba(250,248,244,0.48)_100%)] px-2 pb-[calc(env(safe-area-inset-bottom)+0.3rem)] ${isStandalone ? "pt-1" : "pt-1.5"} lg:hidden`}>
             <div className="mx-auto grid max-w-xl grid-cols-5 items-end gap-0.5 rounded-[22px] border border-white/25 bg-[rgba(255,255,255,0.18)] px-1 py-1 shadow-[0_-4px_12px_rgba(139,94,60,0.03)] backdrop-blur-[6px]">
               {mobilePrimaryNavItems.map((item) => {
                 const isActive = activeMobilePathname === item.href;
@@ -122,7 +124,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex min-w-0 flex-col items-center justify-end gap-0.5 rounded-[16px] px-1 py-1.5 text-center transition-transform duration-200 ${
+                    className={`flex min-w-0 flex-col items-center justify-end gap-0.5 rounded-[16px] px-1 py-1.5 text-center transition-transform duration-150 active:scale-[0.97] ${
                       isPrimaryAction
                         ? "bg-[rgba(200,162,124,0.1)]"
                         : isActive

@@ -31,6 +31,7 @@ export function ExpenseCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay, ease: "easeOut" }}
       whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.992 }}
       className="rounded-[22px] border border-white/75 bg-white/85 p-4 shadow-[0_16px_34px_rgba(139,94,60,0.07)] backdrop-blur sm:rounded-[28px] md:p-5"
     >
       <div
@@ -71,7 +72,7 @@ export function ExpenseCard({
                 disabled={isEditing}
                 onClick={() => onEdit?.(expense.id)}
                 aria-label={`Edit ${expense.title}`}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(139,94,60,0.12)] bg-white/86 text-[var(--color-primary)] shadow-[0_8px_18px_rgba(139,94,60,0.05)] hover:-translate-y-0.5 hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(139,94,60,0.12)] bg-white/86 text-[var(--color-primary)] shadow-[0_8px_18px_rgba(139,94,60,0.05)] transition-transform duration-150 hover:-translate-y-0.5 hover:bg-white active:scale-[0.96] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Pencil size={15} strokeWidth={1.7} className="text-[var(--color-primary)]/85" />
               </button>
@@ -80,7 +81,7 @@ export function ExpenseCard({
                 disabled={isDeleting}
                 onClick={() => onDelete?.(expense.id)}
                 aria-label={`Delete ${expense.title}`}
-                className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-wood)] text-white shadow-[0_10px_18px_rgba(139,94,60,0.14)] hover:-translate-y-0.5 hover:bg-[#765033] disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-wood)] text-white shadow-[0_10px_18px_rgba(139,94,60,0.14)] transition-transform duration-150 hover:-translate-y-0.5 hover:bg-[#765033] active:scale-[0.96] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Trash2 size={15} strokeWidth={1.7} className="text-white" />
               </button>

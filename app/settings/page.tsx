@@ -358,7 +358,7 @@ export default function SettingsPage() {
         <p className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--color-primary)]">
           Settings
         </p>
-        <h1 className="font-display text-[3rem] leading-none text-[var(--color-text)] sm:text-[3.75rem] md:text-6xl">
+        <h1 className="font-display text-[2.25rem] leading-none text-[var(--color-text)] sm:text-[3.75rem] md:text-6xl">
           Preferences and categories
         </h1>
         <p className="max-w-2xl text-sm leading-6 text-[color:rgba(43,43,43,0.72)] sm:leading-7 md:text-base">

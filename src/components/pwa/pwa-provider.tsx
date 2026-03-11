@@ -18,6 +18,7 @@ type BeforeInstallPromptEvent = Event & {
 type PwaContextValue = {
   canInstall: boolean;
   isOffline: boolean;
+  isStandalone: boolean;
   updateReady: boolean;
   promptInstall: () => Promise<void>;
   applyUpdate: () => void;
@@ -32,9 +33,11 @@ export function PwaProvider({ children }: { children: ReactNode }) {
   const [isOffline, setIsOffline] = useState(() =>
     typeof navigator === "undefined" ? false : !navigator.onLine,
   );
+  const [isStandalone, setIsStandalone] = useState(false);
   const [updateReady, setUpdateReady] = useState(false);
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(display-mode: standalone)");
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
     const handleBeforeInstallPrompt = (event: Event) => {
@@ -42,15 +45,22 @@ export function PwaProvider({ children }: { children: ReactNode }) {
       deferredPromptRef.current = event as BeforeInstallPromptEvent;
       setCanInstall(true);
     };
+    const handleDisplayModeChange = () => {
+      const navigatorWithStandalone = navigator as Navigator & { standalone?: boolean };
+      setIsStandalone(mediaQuery.matches || navigatorWithStandalone.standalone === true);
+    };
 
+    handleDisplayModeChange();
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    mediaQuery.addEventListener("change", handleDisplayModeChange);
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      mediaQuery.removeEventListener("change", handleDisplayModeChange);
     };
   }, []);
 
@@ -119,6 +129,7 @@ export function PwaProvider({ children }: { children: ReactNode }) {
     () => ({
       canInstall,
       isOffline,
+      isStandalone,
       updateReady,
       promptInstall: async () => {
         const deferredPrompt = deferredPromptRef.current;
@@ -136,7 +147,7 @@ export function PwaProvider({ children }: { children: ReactNode }) {
         waitingWorkerRef.current?.postMessage({ type: "SKIP_WAITING" });
       },
     }),
-    [canInstall, isOffline, updateReady],
+    [canInstall, isOffline, isStandalone, updateReady],
   );
 
   return <PwaContext.Provider value={value}>{children}</PwaContext.Provider>;

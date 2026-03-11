@@ -227,7 +227,7 @@ export default function InsightsPage() {
         <p className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--color-primary)]">
           Insights
         </p>
-        <h1 className="font-display text-5xl leading-none text-[var(--color-text)] md:text-6xl">
+        <h1 className="font-display text-[2.45rem] leading-none text-[var(--color-text)] md:text-6xl">
           Patterns worth noticing
         </h1>
         <p className="max-w-2xl text-sm leading-7 text-[color:rgba(43,43,43,0.72)] md:text-base">
@@ -529,6 +529,11 @@ export default function InsightsPage() {
           <ChartCard
             title="Spending by category"
             description="Live category distribution for the current month."
+            mobileSummary={
+              topCategory
+                ? `${topCategory.name} leads this month at ${formatCurrency(topCategory.value, currency)}.`
+                : "Your top categories will show here once you add more expenses."
+            }
           >
             <CategoryPieChart data={categorySpending} />
           </ChartCard>
@@ -537,6 +542,11 @@ export default function InsightsPage() {
           <ChartCard
             title="Monthly trend"
             description="Your actual expense totals across the last six months."
+            mobileSummary={
+              monthlyMomentum.currentMonth
+                ? `${monthlyMomentum.currentMonth.month} closed at ${formatCurrency(monthlyMomentum.currentMonth.amount, currency)}.`
+                : "Track a few months to reveal the recent direction."
+            }
           >
             <MonthlyTrendChart data={monthlyTrend} />
           </ChartCard>

@@ -13,12 +13,12 @@ export function Button({
 }: ButtonProps) {
   const styles =
     variant === "primary"
-      ? "bg-[var(--color-primary)] text-white shadow-[0_14px_28px_rgba(63,143,104,0.24)] hover:-translate-y-0.5 hover:bg-[#367b59]"
-      : "bg-[var(--color-background)] text-[var(--color-text)] hover:-translate-y-0.5 hover:bg-white";
+      ? "bg-[var(--color-primary)] text-white shadow-[0_14px_28px_rgba(63,143,104,0.24)] hover:-translate-y-0.5 hover:bg-[#367b59] active:scale-[0.98] active:translate-y-0"
+      : "bg-[var(--color-background)] text-[var(--color-text)] hover:-translate-y-0.5 hover:bg-white active:scale-[0.98] active:translate-y-0";
 
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold ${styles} ${className}`}
+      className={`inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition-transform duration-150 ${styles} ${className}`}
       {...props}
     >
       {children}

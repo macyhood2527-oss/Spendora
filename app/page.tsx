@@ -171,7 +171,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-3">
-            <h1 className="font-display text-[3rem] leading-none text-[var(--color-text)] sm:text-[3.5rem] md:text-[4.25rem]">
+            <h1 className="font-display text-[2.35rem] leading-none text-[var(--color-text)] sm:text-[3.5rem] md:text-[4.25rem]">
               Welcome back
             </h1>
             <p className="max-w-2xl text-sm leading-7 text-[color:rgba(43,43,43,0.64)] sm:text-base sm:leading-8">
