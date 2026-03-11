@@ -146,14 +146,6 @@ export default function AddExpensePage() {
                 </option>
               ))}
             </InputField>
-            <div className="rounded-[22px] bg-[var(--color-background)]/90 p-4 sm:rounded-[28px] sm:p-5">
-              <p className="text-sm font-medium text-[var(--color-text)]">
-                Entry context
-              </p>
-              <p className="mt-2 text-sm leading-6 text-[color:rgba(43,43,43,0.65)]">
-                Merchant keeps presets clean. Notes stay available for extra context.
-              </p>
-            </div>
           </div>
 
           <div className="mt-5">
