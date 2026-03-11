@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BarChart3, CalendarRange, Download, Share2, Sparkles } from "lucide-react";
+import type { PropsWithChildren } from "react";
 import { useMemo, useState } from "react";
 import { ChartCard } from "@/components/cards/chart-card";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
@@ -21,6 +21,89 @@ import {
 import { formatCurrency } from "@/features/expenses/formatters";
 import { useCurrency } from "@/features/settings/use-currency";
 import { useExpenses } from "@/features/expenses/use-expenses";
+
+type InsightIconProps = {
+  className?: string;
+};
+
+function StrokeIcon({
+  children,
+  className,
+  viewBox = "0 0 24 24",
+}: PropsWithChildren<{ className?: string; viewBox?: string }>) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox={viewBox}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      {children}
+    </svg>
+  );
+}
+
+function SparklesIcon({ className }: InsightIconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z" />
+      <path d="M19 3v4" />
+      <path d="M21 5h-4" />
+      <path d="M5 16v3" />
+      <path d="M6.5 17.5h-3" />
+    </StrokeIcon>
+  );
+}
+
+function BarChartIcon({ className }: InsightIconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <path d="M4 20V10" />
+      <path d="M12 20V4" />
+      <path d="M20 20v-7" />
+      <path d="M2 20h20" />
+    </StrokeIcon>
+  );
+}
+
+function CalendarRangeIcon({ className }: InsightIconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M16 3v4" />
+      <path d="M8 3v4" />
+      <path d="M3 11h18" />
+      <path d="M8 15h3" />
+      <path d="M13 15h3" />
+    </StrokeIcon>
+  );
+}
+
+function ShareIcon({ className }: InsightIconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="M8.6 10.7l6.8-3.4" />
+      <path d="M8.6 13.3l6.8 3.4" />
+    </StrokeIcon>
+  );
+}
+
+function DownloadIcon({ className }: InsightIconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <path d="M12 4v10" />
+      <path d="M8 10l4 4 4-4" />
+      <path d="M4 20h16" />
+    </StrokeIcon>
+  );
+}
 
 export default function InsightsPage() {
   const { expenses } = useExpenses();
@@ -184,10 +267,8 @@ export default function InsightsPage() {
           <section className="rounded-[30px] border border-white/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.84),rgba(250,250,247,0.76))] p-5 shadow-[0_18px_45px_rgba(139,94,60,0.08)] backdrop-blur md:p-6 print-hidden">
             <div className="flex items-start gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(127,191,154,0.14)]">
-                <Sparkles
-                  size={19}
-                  strokeWidth={1.5}
-                  className="text-[var(--color-primary)]"
+                <SparklesIcon
+                  className="h-[19px] w-[19px] text-[var(--color-primary)]"
                 />
               </span>
               <div>
@@ -222,10 +303,8 @@ export default function InsightsPage() {
           <div className="print-hidden flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex items-start gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(200,162,124,0.16)]">
-                <BarChart3
-                  size={19}
-                  strokeWidth={1.5}
-                  className="text-[var(--color-wood)]/80"
+                <BarChartIcon
+                  className="h-[19px] w-[19px] text-[var(--color-wood)]/80"
                 />
               </span>
               <div>
@@ -319,7 +398,7 @@ export default function InsightsPage() {
 
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <Button type="button" onClick={handleCopyReport} className="sm:w-auto">
-                  <Share2 size={16} strokeWidth={1.7} className="mr-2" />
+                  <ShareIcon className="mr-2 h-4 w-4" />
                   Copy summary
                 </Button>
                 <Button
@@ -328,7 +407,7 @@ export default function InsightsPage() {
                   onClick={handleDownloadPdf}
                   className="sm:w-auto print-hidden"
                 >
-                  <Download size={16} strokeWidth={1.7} className="mr-2" />
+                  <DownloadIcon className="mr-2 h-4 w-4" />
                   Download PDF
                 </Button>
               </div>
@@ -473,10 +552,8 @@ export default function InsightsPage() {
           >
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(127,191,154,0.14)]">
-                <CalendarRange
-                  size={19}
-                  strokeWidth={1.5}
-                  className="text-[var(--color-primary)]/80"
+                <CalendarRangeIcon
+                  className="h-[19px] w-[19px] text-[var(--color-primary)]/80"
                 />
               </span>
               <div>
@@ -543,10 +620,8 @@ export default function InsightsPage() {
           >
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(200,162,124,0.16)]">
-                <BarChart3
-                  size={19}
-                  strokeWidth={1.5}
-                  className="text-[var(--color-wood)]/80"
+                <BarChartIcon
+                  className="h-[19px] w-[19px] text-[var(--color-wood)]/80"
                 />
               </span>
               <div>
