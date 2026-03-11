@@ -26,6 +26,14 @@ const navItems = [
   { href: "/settings", label: "Settings", icon: Settings2 },
 ];
 
+export const mobilePrimaryNavItems = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/expenses", label: "Expenses", icon: Receipt },
+  { href: "/add-expense", label: "Add", icon: PlusCircle },
+  { href: "/insights", label: "Insights", icon: BarChart3 },
+  { href: "/settings", label: "Settings", icon: Settings2 },
+] as const;
+
 const infoItems = [
   {
     href: "/about",

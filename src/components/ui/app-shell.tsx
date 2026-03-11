@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { usePwa } from "@/components/pwa/pwa-provider";
 import { useHasMounted } from "@/hooks/use-has-mounted";
-import { Sidebar } from "@/components/ui/sidebar";
+import { Sidebar, mobilePrimaryNavItems } from "@/components/ui/sidebar";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -14,6 +14,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const hasMounted = useHasMounted();
   const { applyUpdate, canInstall, isOffline, promptInstall, updateReady } = usePwa();
+  const activeMobilePathname = hasMounted ? pathname : "";
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -92,7 +93,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   Spendora
                 </p>
                 <p className="mt-1 text-xs text-[color:rgba(43,43,43,0.56)]">
-                  {pathname === "/" ? "Dashboard" : "Expense tracker"}
+                  {activeMobilePathname === "/" ? "Dashboard" : "Expense tracker"}
                 </p>
               </div>
             </Link>
@@ -106,9 +107,63 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
           </header>
 
-          <main className="mx-3 mb-5 mt-4 sm:mx-4 sm:mb-6 sm:mt-5 lg:mx-6 lg:mb-8 lg:mr-8 lg:mt-8">
+          <main className="mx-3 mb-[calc(env(safe-area-inset-bottom)+5.7rem)] mt-4 sm:mx-4 sm:mb-[calc(env(safe-area-inset-bottom)+6rem)] sm:mt-5 lg:mx-6 lg:mb-8 lg:mr-8 lg:mt-8">
             {children}
           </main>
+
+          <nav className="print-hidden fixed inset-x-0 bottom-0 z-30 bg-[linear-gradient(180deg,rgba(250,248,244,0),rgba(250,248,244,0.14)_40%,rgba(250,248,244,0.3)_70%,rgba(250,248,244,0.48)_100%)] px-2 pb-[calc(env(safe-area-inset-bottom)+0.3rem)] pt-1.5 lg:hidden">
+            <div className="mx-auto grid max-w-xl grid-cols-5 items-end gap-0.5 rounded-[22px] border border-white/25 bg-[rgba(255,255,255,0.18)] px-1 py-1 shadow-[0_-4px_12px_rgba(139,94,60,0.03)] backdrop-blur-[6px]">
+              {mobilePrimaryNavItems.map((item) => {
+                const isActive = activeMobilePathname === item.href;
+                const Icon = item.icon;
+                const isPrimaryAction = item.href === "/add-expense";
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex min-w-0 flex-col items-center justify-end gap-0.5 rounded-[16px] px-1 py-1.5 text-center transition-transform duration-200 ${
+                      isPrimaryAction
+                        ? "bg-[rgba(200,162,124,0.1)]"
+                        : isActive
+                          ? "bg-[rgba(127,191,154,0.1)]"
+                          : "hover:bg-white/70"
+                    }`}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <span
+                      className={`flex items-center justify-center ${
+                        isPrimaryAction
+                          ? `h-11 w-11 rounded-full border border-white/60 shadow-[0_8px_14px_rgba(176,132,92,0.14)] ${
+                              isActive
+                                ? "bg-[var(--color-wood)] text-white"
+                                : "bg-[linear-gradient(180deg,rgba(214,180,145,1),rgba(176,132,92,1))] text-white"
+                            }`
+                          : `h-8.5 w-8.5 rounded-[16px] ${
+                              isActive
+                                ? "bg-[var(--color-primary)] text-white shadow-[0_6px_12px_rgba(63,143,104,0.14)]"
+                                : "bg-[rgba(250,250,247,0.46)] text-[var(--color-primary)]/72"
+                            }`
+                      }`}
+                    >
+                      <Icon size={isPrimaryAction ? 20 : 16} strokeWidth={isPrimaryAction ? 1.8 : 1.7} />
+                    </span>
+                    <span
+                      className={`text-[9px] leading-none tracking-[0.01em] ${
+                        isPrimaryAction
+                          ? "font-medium text-[var(--color-wood)]/92"
+                          : isActive
+                            ? "font-medium text-[var(--color-text)]/92"
+                            : "font-normal text-[color:rgba(43,43,43,0.48)]"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
         </div>
       </div>
     </div>
