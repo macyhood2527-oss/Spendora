@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BarChart3, CalendarRange, Download, Printer, Share2, Sparkles } from "lucide-react";
+import { BarChart3, CalendarRange, Download, Share2, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { ChartCard } from "@/components/cards/chart-card";
 import { CategoryPieChart } from "@/components/charts/category-pie-chart";
@@ -129,27 +129,11 @@ export default function InsightsPage() {
     }
   };
 
-  const handleDownloadReport = () => {
-    const blob = new Blob([monthlyReport.shareText], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = `spendora-report-${monthlyReport.monthKey}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-    showToast({
-      tone: "success",
-      title: "Report downloaded",
-      description: `${monthlyReport.monthLabel} was saved as a text report.`,
-    });
-  };
-
-  const handlePrintReport = () => {
+  const handleDownloadPdf = () => {
     showToast({
       tone: "info",
-      title: "Opening print dialog",
-      description: "Choose Save as PDF if you want a shareable report file.",
+      title: "Preparing PDF export",
+      description: "The print dialog will open so you can save this report as a PDF.",
     });
     window.print();
   };
@@ -249,7 +233,7 @@ export default function InsightsPage() {
                   Monthly report
                 </h2>
                 <p className="mt-1 text-sm leading-6 text-[color:rgba(43,43,43,0.62)]">
-                  A compact summary you can copy or download for any tracked month.
+                  A compact summary you can copy or export as a PDF for any tracked month.
                 </p>
               </div>
             </div>
@@ -341,20 +325,11 @@ export default function InsightsPage() {
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={handlePrintReport}
-                  className="sm:w-auto print-hidden"
-                >
-                  <Printer size={16} strokeWidth={1.7} className="mr-2" />
-                  Print / Save PDF
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleDownloadReport}
+                  onClick={handleDownloadPdf}
                   className="sm:w-auto print-hidden"
                 >
                   <Download size={16} strokeWidth={1.7} className="mr-2" />
-                  Download report
+                  Download PDF
                 </Button>
               </div>
             </article>

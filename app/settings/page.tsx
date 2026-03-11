@@ -1,7 +1,7 @@
 "use client";
 
 import { createElement, useEffect, useState, type FormEvent } from "react";
-import { Download, FolderKanban, PiggyBank, Plus, Settings2, Trash2, Upload } from "lucide-react";
+import { AlertTriangle, Download, FolderKanban, PiggyBank, Plus, Settings2, Trash2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/ui/fade-in";
 import { useToast } from "@/components/ui/toast-provider";
@@ -42,6 +42,7 @@ export default function SettingsPage() {
   const [backupError, setBackupError] = useState("");
   const [isExportingBackup, setIsExportingBackup] = useState(false);
   const [isImportingBackup, setIsImportingBackup] = useState(false);
+  const [pendingRestoreFile, setPendingRestoreFile] = useState<File | null>(null);
 
   useEffect(() => {
     setBudgetInput(monthlyBudget === null ? "" : String(monthlyBudget));
@@ -279,16 +280,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleImportBackup = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-    mode: "merge" | "replace",
-  ) => {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
+  const processBackupImport = async (file: File, mode: "merge" | "replace") => {
     setIsImportingBackup(true);
     setBackupError("");
     setBackupMessage("");
@@ -317,13 +309,51 @@ export default function SettingsPage() {
         description: error instanceof Error ? error.message : "Try again in a moment.",
       });
     } finally {
-      event.target.value = "";
       setIsImportingBackup(false);
     }
   };
 
+  const handleImportBackup = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    mode: "merge" | "replace",
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    if (mode === "replace") {
+      setPendingRestoreFile(file);
+      return;
+    }
+
+    await processBackupImport(file, mode);
+  };
+
+  const handleCancelRestore = () => {
+    setPendingRestoreFile(null);
+    showToast({
+      tone: "info",
+      title: "Restore cancelled",
+      description: "Your current local data was left unchanged.",
+    });
+  };
+
+  const handleConfirmRestore = async () => {
+    if (!pendingRestoreFile) {
+      return;
+    }
+
+    const file = pendingRestoreFile;
+    setPendingRestoreFile(null);
+    await processBackupImport(file, "replace");
+  };
+
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <>
+      <div className="space-y-6 sm:space-y-8">
       <FadeIn className="space-y-3">
         <p className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--color-primary)]">
           Settings
@@ -642,6 +672,65 @@ export default function SettingsPage() {
           ) : null}
         </section>
       </FadeIn>
-    </div>
+      </div>
+
+      {pendingRestoreFile ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(43,43,43,0.28)] px-0 py-0 sm:items-center sm:px-6 sm:py-6">
+          <div className="w-full max-w-lg rounded-t-[30px] border border-white/70 bg-[rgba(255,255,255,0.96)] p-4 shadow-[0_30px_60px_rgba(139,94,60,0.12)] backdrop-blur sm:rounded-[30px] sm:p-6">
+            <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-[rgba(139,94,60,0.16)] sm:hidden" />
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[rgba(200,162,124,0.18)]">
+                  <AlertTriangle size={18} strokeWidth={1.5} className="text-[var(--color-wood)]/85" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium uppercase tracking-[0.22em] text-[var(--color-wood)]">
+                    Restore backup
+                  </p>
+                  <h2 className="mt-2 font-display text-[1.9rem] leading-none text-[var(--color-text)] sm:text-[2.6rem]">
+                    Replace current local data?
+                  </h2>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleCancelRestore}
+                className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(250,250,247,0.95)] hover:bg-white"
+                aria-label="Close restore dialog"
+              >
+                <X size={18} strokeWidth={1.5} className="text-[var(--color-primary)]/80" />
+              </button>
+            </div>
+
+            <div className="mt-6 rounded-[24px] bg-[var(--color-background)]/86 p-4">
+              <p className="text-base font-semibold text-[var(--color-text)]">
+                {pendingRestoreFile.name}
+              </p>
+              <p className="mt-1 text-sm text-[color:rgba(43,43,43,0.62)]">
+                This will overwrite the current expenses, categories, and settings stored on this device.
+              </p>
+            </div>
+
+            <p className="mt-4 text-sm leading-6 text-[color:rgba(43,43,43,0.62)]">
+              This action cannot be undone. Export a backup first if you want to keep the current local data before restoring this file.
+            </p>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <Button type="button" variant="ghost" onClick={handleCancelRestore} className="w-full sm:w-auto">
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                disabled={isImportingBackup}
+                onClick={() => void handleConfirmRestore()}
+                className="w-full bg-[var(--color-wood)] hover:bg-[#765033] sm:w-auto"
+              >
+                {isImportingBackup ? "Restoring..." : "Restore backup"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
