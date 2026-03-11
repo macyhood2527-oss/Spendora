@@ -83,7 +83,7 @@ export function CategoryPieChart({ data }: { data: CategorySpending[] }) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => [`$${value}`, "Amount"]}
+                formatter={(value) => [`$${Number(value ?? 0)}`, "Amount"]}
                 contentStyle={{
                   borderRadius: 18,
                   border: "1px solid rgba(139, 94, 60, 0.10)",
