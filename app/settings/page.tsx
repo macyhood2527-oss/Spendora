@@ -4,6 +4,7 @@ import { createElement, useEffect, useState, type FormEvent } from "react";
 import { Download, FolderKanban, PiggyBank, Plus, Settings2, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/ui/fade-in";
+import { useToast } from "@/components/ui/toast-provider";
 import { getCategoryIcon } from "@/features/expenses/icons";
 import { useCategories } from "@/features/expenses/use-categories";
 import { currencyOptions } from "@/features/settings/constants";
@@ -12,6 +13,7 @@ import { useCurrency } from "@/features/settings/use-currency";
 import { exportBackup, importBackup } from "@/lib/db/spendora-db";
 
 export default function SettingsPage() {
+  const { showToast } = useToast();
   const { currency, isLoading: isCurrencyLoading, updateCurrency } = useCurrency();
   const {
     monthlyBudget,
@@ -61,16 +63,45 @@ export default function SettingsPage() {
     });
   }, [categories, categoryBudgets]);
 
+  const handleCurrencyChange = async (nextCurrency: string) => {
+    try {
+      await updateCurrency(nextCurrency);
+      showToast({
+        tone: "success",
+        title: "Currency updated",
+        description: `Spendora now formats values in ${nextCurrency}.`,
+      });
+    } catch (error) {
+      console.error("Failed to update currency", error);
+      showToast({
+        tone: "error",
+        title: "Could not update currency",
+        description: "Try again in a moment.",
+      });
+    }
+  };
+
   const handleAddCategory = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
       await addCategory(newCategory);
+      const savedCategory = newCategory.trim();
       setNewCategory("");
       setCategoryError("");
+      showToast({
+        tone: "success",
+        title: "Category added",
+        description: `${savedCategory} is now available in your forms and filters.`,
+      });
     } catch (error) {
       console.error("Failed to add category", error);
       setCategoryError("Could not save category.");
+      showToast({
+        tone: "error",
+        title: "Could not add category",
+        description: "Choose a different name or try again.",
+      });
     }
   };
 
@@ -85,9 +116,19 @@ export default function SettingsPage() {
       try {
         await updateMonthlyBudget(null);
         setBudgetError("");
+        showToast({
+          tone: "success",
+          title: "Budget cleared",
+          description: "Your monthly limit has been removed.",
+        });
       } catch (error) {
         console.error("Failed to clear budget", error);
         setBudgetError("Could not save budget.");
+        showToast({
+          tone: "error",
+          title: "Could not save budget",
+          description: "Try again in a moment.",
+        });
       } finally {
         setIsSavingBudget(false);
       }
@@ -107,9 +148,19 @@ export default function SettingsPage() {
     try {
       await updateMonthlyBudget(parsed);
       setBudgetError("");
+      showToast({
+        tone: "success",
+        title: "Budget saved",
+        description: "Your monthly budget was updated.",
+      });
     } catch (error) {
       console.error("Failed to save budget", error);
       setBudgetError("Could not save budget.");
+      showToast({
+        tone: "error",
+        title: "Could not save budget",
+        description: "Try again in a moment.",
+      });
     } finally {
       setIsSavingBudget(false);
     }
@@ -124,9 +175,19 @@ export default function SettingsPage() {
       try {
         await updateCategoryBudget(categoryName, null);
         setCategoryBudgetError("");
+        showToast({
+          tone: "success",
+          title: "Category budget cleared",
+          description: `${categoryName} no longer has a monthly cap.`,
+        });
       } catch (error) {
         console.error("Failed to clear category budget", error);
         setCategoryBudgetError("Could not save category budget.");
+        showToast({
+          tone: "error",
+          title: "Could not save category budget",
+          description: "Try again in a moment.",
+        });
       } finally {
         setSavingCategoryBudget(null);
       }
@@ -146,11 +207,39 @@ export default function SettingsPage() {
     try {
       await updateCategoryBudget(categoryName, parsed);
       setCategoryBudgetError("");
+      showToast({
+        tone: "success",
+        title: "Category budget saved",
+        description: `${categoryName} now has an updated monthly cap.`,
+      });
     } catch (error) {
       console.error("Failed to save category budget", error);
       setCategoryBudgetError("Could not save category budget.");
+      showToast({
+        tone: "error",
+        title: "Could not save category budget",
+        description: "Try again in a moment.",
+      });
     } finally {
       setSavingCategoryBudget(null);
+    }
+  };
+
+  const handleDeleteCategory = async (id: string, name: string) => {
+    try {
+      await deleteCategory(id);
+      showToast({
+        tone: "success",
+        title: "Category deleted",
+        description: `${name} was removed from your custom categories.`,
+      });
+    } catch (error) {
+      console.error("Failed to delete category", error);
+      showToast({
+        tone: "error",
+        title: "Could not delete category",
+        description: error instanceof Error ? error.message : "Try again in a moment.",
+      });
     }
   };
 
@@ -172,9 +261,19 @@ export default function SettingsPage() {
       link.click();
       URL.revokeObjectURL(url);
       setBackupMessage("Backup exported successfully.");
+      showToast({
+        tone: "success",
+        title: "Backup exported",
+        description: "Your local data was downloaded as a JSON backup.",
+      });
     } catch (error) {
       console.error("Failed to export backup", error);
       setBackupError("Could not export backup.");
+      showToast({
+        tone: "error",
+        title: "Could not export backup",
+        description: "Try again in a moment.",
+      });
     } finally {
       setIsExportingBackup(false);
     }
@@ -202,11 +301,21 @@ export default function SettingsPage() {
       setBackupMessage(
         `${mode === "replace" ? "Backup restored" : "Backup merged"}: ${result.importedExpenses} expenses, ${result.importedCategories} categories, and ${result.importedSettings} settings.`,
       );
+      showToast({
+        tone: "success",
+        title: mode === "replace" ? "Backup restored" : "Backup merged",
+        description: `${result.importedExpenses} expenses and ${result.importedSettings} settings were imported.`,
+      });
     } catch (error) {
       console.error("Failed to import backup", error);
       setBackupError(
         error instanceof Error ? error.message : "Could not import backup.",
       );
+      showToast({
+        tone: "error",
+        title: mode === "replace" ? "Could not restore backup" : "Could not merge backup",
+        description: error instanceof Error ? error.message : "Try again in a moment.",
+      });
     } finally {
       event.target.value = "";
       setIsImportingBackup(false);
@@ -253,7 +362,7 @@ export default function SettingsPage() {
               <select
                 value={currency}
                 disabled={isCurrencyLoading}
-                onChange={(event) => updateCurrency(event.target.value)}
+                onChange={(event) => void handleCurrencyChange(event.target.value)}
                 className="mt-2 w-full rounded-2xl border border-[rgba(139,94,60,0.12)] bg-white/92 px-4 py-3 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-secondary)] focus:shadow-[0_0_0_4px_rgba(127,191,154,0.12)]"
               >
                 {currencyOptions.map((option) => (
@@ -428,7 +537,7 @@ export default function SettingsPage() {
                       ) : (
                         <button
                           type="button"
-                          onClick={() => deleteCategory(category.id)}
+                          onClick={() => void handleDeleteCategory(category.id, category.name)}
                           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[color:rgba(43,43,43,0.48)] hover:bg-white hover:text-[#a15a4b]"
                           aria-label={`Delete ${category.name}`}
                         >

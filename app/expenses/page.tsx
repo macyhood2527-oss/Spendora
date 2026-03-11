@@ -8,6 +8,7 @@ import { EditExpenseModal } from "@/components/expenses/edit-expense-modal";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/ui/fade-in";
 import { InputField } from "@/components/ui/input-field";
+import { useToast } from "@/components/ui/toast-provider";
 import {
   filterAndSortExpenses,
   hasActiveExpenseFilters,
@@ -27,6 +28,7 @@ export default function ExpensesPage() {
   const { expenses, isLoading } = useExpenses();
   const { categories } = useCategories();
   const { currency } = useCurrency();
+  const { showToast } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingExpense, setEditingExpense] = useState<ExpenseRecord | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<ExpenseRecord | null>(null);
@@ -73,12 +75,27 @@ export default function ExpensesPage() {
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
+    const expenseName =
+      expenseToDelete?.merchant?.trim() ||
+      expenseToDelete?.note?.trim() ||
+      expenseToDelete?.category ||
+      "Expense";
 
     try {
       await deleteExpense(id);
       setExpenseToDelete(null);
+      showToast({
+        tone: "success",
+        title: "Expense deleted",
+        description: `${expenseName} was removed from your local history.`,
+      });
     } catch (error) {
       console.error("Failed to delete expense", error);
+      showToast({
+        tone: "error",
+        title: "Could not delete expense",
+        description: "Try again in a moment.",
+      });
     } finally {
       setDeletingId(null);
     }
@@ -112,6 +129,18 @@ export default function ExpensesPage() {
     try {
       await updateExpense(id, changes);
       setEditingExpense(null);
+      showToast({
+        tone: "success",
+        title: "Expense updated",
+        description: "Your changes were saved successfully.",
+      });
+    } catch (error) {
+      showToast({
+        tone: "error",
+        title: "Could not update expense",
+        description: "Try again in a moment.",
+      });
+      throw error;
     } finally {
       setIsSavingEdit(false);
     }

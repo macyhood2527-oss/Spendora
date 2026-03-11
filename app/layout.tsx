@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/ui/app-shell";
 import { PwaProvider } from "@/components/pwa/pwa-provider";
+import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,7 +35,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <PwaProvider>
-          <AppShell>{children}</AppShell>
+          <ToastProvider>
+            <AppShell>{children}</AppShell>
+          </ToastProvider>
         </PwaProvider>
       </body>
     </html>

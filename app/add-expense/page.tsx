@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MerchantAutocomplete } from "@/components/expenses/merchant-autocomplete";
 import { FadeIn } from "@/components/ui/fade-in";
 import { InputField } from "@/components/ui/input-field";
+import { useToast } from "@/components/ui/toast-provider";
 import { useCategories } from "@/features/expenses/use-categories";
 import { useExpenses } from "@/features/expenses/use-expenses";
 import { addExpense } from "@/lib/db/spendora-db";
@@ -14,6 +15,7 @@ export default function AddExpensePage() {
   const router = useRouter();
   const { categories } = useCategories();
   const { expenses } = useExpenses();
+  const { showToast } = useToast();
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [merchant, setMerchant] = useState("");
@@ -54,6 +56,12 @@ export default function AddExpensePage() {
         note: note.trim() || undefined,
       });
 
+      showToast({
+        tone: "success",
+        title: "Expense saved",
+        description: "Your new entry is now part of your local history.",
+      });
+
       startTransition(() => {
         router.push("/expenses");
         router.refresh();
@@ -61,6 +69,11 @@ export default function AddExpensePage() {
     } catch (submitError) {
       console.error("Failed to save expense", submitError);
       setError("Could not save the expense. Try again.");
+      showToast({
+        tone: "error",
+        title: "Could not save expense",
+        description: "Try again in a moment.",
+      });
       setIsSaving(false);
     }
   };

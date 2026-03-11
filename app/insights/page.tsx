@@ -8,6 +8,7 @@ import { CategoryPieChart } from "@/components/charts/category-pie-chart";
 import { MonthlyTrendChart } from "@/components/charts/monthly-trend-chart";
 import { FadeIn } from "@/components/ui/fade-in";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast-provider";
 import {
   getAvailableReportMonths,
   getCategorySpending,
@@ -24,6 +25,7 @@ import { useExpenses } from "@/features/expenses/use-expenses";
 export default function InsightsPage() {
   const { expenses } = useExpenses();
   const { currency } = useCurrency();
+  const { showToast } = useToast();
   const [selectedReportMonth, setSelectedReportMonth] = useState(() =>
     new Date().toISOString().slice(0, 7),
   );
@@ -112,8 +114,18 @@ export default function InsightsPage() {
   const handleCopyReport = async () => {
     try {
       await navigator.clipboard.writeText(monthlyReport.shareText);
+      showToast({
+        tone: "success",
+        title: "Summary copied",
+        description: `${monthlyReport.monthLabel} report text is now in your clipboard.`,
+      });
     } catch (error) {
       console.error("Failed to copy report", error);
+      showToast({
+        tone: "error",
+        title: "Could not copy summary",
+        description: "Your browser may be blocking clipboard access.",
+      });
     }
   };
 
@@ -126,9 +138,19 @@ export default function InsightsPage() {
     link.download = `spendora-report-${monthlyReport.monthKey}.txt`;
     link.click();
     URL.revokeObjectURL(url);
+    showToast({
+      tone: "success",
+      title: "Report downloaded",
+      description: `${monthlyReport.monthLabel} was saved as a text report.`,
+    });
   };
 
   const handlePrintReport = () => {
+    showToast({
+      tone: "info",
+      title: "Opening print dialog",
+      description: "Choose Save as PDF if you want a shareable report file.",
+    });
     window.print();
   };
 

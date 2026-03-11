@@ -62,11 +62,11 @@ export function MerchantAutocomplete({
       return;
     }
 
-    if (event.key === "Enter") {
-      event.preventDefault();
+    if (event.key === "Enter" || (event.key === "Tab" && !event.shiftKey)) {
       const suggestion = suggestions[highlightedIndex];
 
       if (suggestion) {
+        event.preventDefault();
         handleSelect(suggestion.merchant, suggestion.category);
       }
       return;
